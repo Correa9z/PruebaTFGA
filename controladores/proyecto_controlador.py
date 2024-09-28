@@ -8,6 +8,6 @@ class ProyectoControlador:
         self.proyecto.crear_proyecto(nombre,nombre_empleado)
 
     def buscar_totalidad_proyectos(self):
-        self.proyecto.buscar_totalidad_proyectos()
+        return self.proyecto.buscar_totalidad_proyectos()
 
 

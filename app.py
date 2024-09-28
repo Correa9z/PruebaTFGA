@@ -1,8 +1,31 @@
-from modelos.departamento import Departamento
-from modelos.empleado import Empleado
-from modelos.proyecto import Proyecto
+from vistas.departamento_vista import VistaDepartamento
+from vistas.empleado_vista import VistaEmpleado
+from vistas.proyecto_vista import VistaProyecto
 
-pr = Proyecto("","","")
-pr.buscar_totalidad_proyectos()
+
+vista_d = VistaDepartamento()
+vista_e = VistaEmpleado()
+vista_p = VistaProyecto()
+
+while True:
+
+    print("1. Carga Masiva")
+    print("2. Obtención Proyectos")
+    print("3. Actualización Masiva")
+    print("4. Salir")
+    opcion = int(input("Seleccione una opción: "))
+
+    if opcion == 1:
+        vista_d.carga_departamentos()
+        vista_e.carga_empleados()
+        vista_p.carga_proyectos()
+    elif opcion == 2:
+        vista_p.buscar_totalidad_proyectos()
+    elif opcion == 3:
+        print("Caso todavia no usable")
+    elif opcion == 4:
+        break
+    else:
+        print("Opción no válida.")
 
 

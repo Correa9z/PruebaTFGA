@@ -1,6 +1,6 @@
 from modelos.departamento import Departamento
 
-class EmpleadoControlador:
+class DepartamentoControlador:
 
     departamento = Departamento("","")
 
