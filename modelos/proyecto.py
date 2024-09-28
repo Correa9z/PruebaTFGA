@@ -81,6 +81,9 @@ class Proyecto:
         finally:
             self.conexion.cerrar_bd(cursor)
 
+    
+    
+
 
     def iniciar_logs():
         logging.basicConfig(
