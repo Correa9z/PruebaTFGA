@@ -23,8 +23,8 @@ while True:
     if opcion == 1:
         print("Prueba")
         inicio = time.time()
-        #vista_d.carga_departamentos()
-        vista_e.carga_empleados()
+        vista_d.generar_hilos()
+        #vista_e.carga_empleados()
         #vista_p.carga_proyectos()
         final = time.time()
         print(f"Tiempo transcurrido en segundos: {final - inicio}")

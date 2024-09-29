@@ -1,4 +1,3 @@
-from infra.conexion_bd import ConexionBd
 from modelos.departamento import Departamento
 import logging
 from threading import Lock

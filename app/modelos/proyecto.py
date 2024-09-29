@@ -1,4 +1,3 @@
-from infra.conexion_bd import ConexionBd
 from modelos.empleado import Empleado
 from modelos.departamento import Departamento
 import logging
@@ -71,11 +70,12 @@ class Proyecto:
             print(f"Error: {e}")
 
 
-    def actualizar_nombre_proyectos(self,conexion,cursor,nombre_departamento,viejo_nombre,nuevo_nombre):
+    def actualizar_nombre_proyectos(self,conexion,cursor,lote):
         with self.lock:
             try:
+                lote = [(registro[2], registro[1], registro[0]) for registro in lote]
                 query = "UPDATE proyectos SET nombre = %s WHERE nombre = %s AND empleado_id IN ( SELECT e.id FROM empleados e INNER JOIN departamentos d ON e.departamento_id = d.id WHERE d.nombre = %s)"
-                cursor.execute(query,(nuevo_nombre,viejo_nombre,nombre_departamento,))
+                cursor.executemany(query,lote)
                 conexion.commit()
 
             except Exception as e:
