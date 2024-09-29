@@ -17,7 +17,6 @@ class Departamento:
     def crear_departamento(self,nombre):
         with self.lock:
             try:
-                print(nombre)
                 resultado = Departamento.buscar_departamento_nombre(self,nombre)
                 cursor = self.conexion.conectar_bd()
 
@@ -28,14 +27,12 @@ class Departamento:
                     self.conexion.conexion.commit()
                     logging.info(f"{nombre}: Registro almacenado correctamente")
                 else:
-                    print("error")
                     logging.error(f"{nombre}: El departamento ya existe en al BD")
 
             except Exception as e:
                 print(f"Error: {e}")
 
             finally:
-                print("Cerro base de datos")
                 self.conexion.cerrar_bd(cursor)
 
     
@@ -60,7 +57,7 @@ class Departamento:
 
     def iniciar_logs():
         logging.basicConfig(
-        filename='departamento.log',             # Nombre del archivo de logs
+        filename='app/logs/departamento.log',             # Nombre del archivo de logs
         level=logging.DEBUG,            # Nivel de registro: DEBUG, INFO, WARNING, ERROR, CRITICAL
         format='%(asctime)s - %(levelname)s - %(message)s',  # Formato del mensaje
         datefmt='%Y-%m-%d %H:%M:%S'     # Formato de la fecha

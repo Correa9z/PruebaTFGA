@@ -10,7 +10,7 @@ acciones tales como cargue y actualización masivo, además de busquedas con res
 ## Instalación
 1. Se debe de descargar o clonar el repositorio.
 2. Instala las dependencias con `pip install -r` y la ruta en la que se encuentra el proyecto y el archivo requirements.txt.
-3. Ejecuta el proyecto por medio del inicio del archivo app.
+3. Ejecutar el proyecto por medio del inicio a la carpeta app y al archivo app.py.
 
 ## Configuración Base de Datos
 1. Se debe de dirigir hacia la ruta del proyecto infra/conexion_bd.py

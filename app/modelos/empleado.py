@@ -86,7 +86,7 @@ class Empleado:
 
     def iniciar_logs():
         logging.basicConfig(
-        filename='empleado.log',             # Nombre del archivo de logs
+        filename='app/logs/empleado.log',             # Nombre del archivo de logs
         level=logging.DEBUG,            # Nivel de registro: DEBUG, INFO, WARNING, ERROR, CRITICAL
         format='%(asctime)s - %(levelname)s - %(message)s',  # Formato del mensaje
         datefmt='%Y-%m-%d %H:%M:%S'     # Formato de la fecha

@@ -61,8 +61,6 @@ class Proyecto:
 
         finally:
             self.conexion.cerrar_bd(cursor)
-
-
     
 
     def buscar_totalidad_proyectos(self):
@@ -83,10 +81,9 @@ class Proyecto:
             self.conexion.cerrar_bd(cursor)
 
 
-
     def iniciar_logs():
         logging.basicConfig(
-        filename='proyecto.log',             # Nombre del archivo de logs
+        filename='app/logs/proyecto.log',             # Nombre del archivo de logs
         level=logging.DEBUG,            # Nivel de registro: DEBUG, INFO, WARNING, ERROR, CRITICAL
         format='%(asctime)s - %(levelname)s - %(message)s',  # Formato del mensaje
         datefmt='%Y-%m-%d %H:%M:%S'     # Formato de la fecha
