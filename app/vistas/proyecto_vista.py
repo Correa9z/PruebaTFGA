@@ -42,5 +42,5 @@ class VistaProyecto:
         lista_proyectos = VistaProyecto.leer_informacion(self.ruta_input_actualizacion)
         conexion, cursor = self.bd_controlador.iniciar_bd()
         with ThreadPoolExecutor(max_workers=numero_hilos) as executor:
-            executor.map(lambda proyecto: self.proyecto_controlador.crear_proyecto(conexion,cursor,proyecto[0],proyecto[1]), lista_proyectos)
+            executor.map(lambda proyecto: self.proyecto_controlador.actualizar_proyectos(conexion,cursor,proyecto[0],proyecto[1],proyecto[2]), lista_proyectos)
         self.bd_controlador.cerrar_bd(conexion,cursor)

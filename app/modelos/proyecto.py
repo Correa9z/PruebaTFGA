@@ -1,5 +1,6 @@
 from infra.conexion_bd import ConexionBd
 from modelos.empleado import Empleado
+from modelos.departamento import Departamento
 import logging
 from threading import Lock
 import os
@@ -9,6 +10,7 @@ class Proyecto:
 
     logger = ""
     empleado = Empleado("","","","")
+    departamento = Departamento("","")
     
     def __init__(self,id,nombre,empleado_id):
         self.id = id
@@ -67,6 +69,17 @@ class Proyecto:
             
         except Exception as e:
             print(f"Error: {e}")
+
+
+    def actualizar_nombre_proyectos(self,conexion,cursor,nombre_departamento,viejo_nombre,nuevo_nombre):
+        with self.lock:
+            try:
+                query = "UPDATE proyectos SET nombre = %s WHERE nombre = %s AND empleado_id IN ( SELECT e.id FROM empleados e INNER JOIN departamentos d ON e.departamento_id = d.id WHERE d.nombre = %s)"
+                cursor.execute(query,(nuevo_nombre,viejo_nombre,nombre_departamento,))
+                conexion.commit()
+
+            except Exception as e:
+                print(f"Error: {e}")
 
 
     def iniciar_logs(self,):

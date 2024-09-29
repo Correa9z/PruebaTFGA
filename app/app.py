@@ -23,7 +23,7 @@ while True:
     if opcion == 1:
         print("Prueba")
         inicio = time.time()
-        vista_d.carga_departamentos()
+        #vista_d.carga_departamentos()
         vista_e.carga_empleados()
         #vista_p.carga_proyectos()
         final = time.time()
@@ -31,7 +31,7 @@ while True:
     elif opcion == 2:
         vista_p.buscar_totalidad_proyectos()
     elif opcion == 3:
-        print("Caso todavia no usable")
+        vista_p.carga_actualizacion_proyectos()
     elif opcion == 4:
         break
     else:

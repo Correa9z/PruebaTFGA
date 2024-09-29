@@ -21,7 +21,7 @@ class VistaEmpleado:
             print(f"Error: {e}")
 
 
-    def carga_empleados(self, numero_hilos = 20):
+    def carga_empleados(self, numero_hilos = 200):
         lista_empleados = VistaEmpleado.leer_informacion(self.ruta_input)
         conexion, cursor = self.bd_controlador.iniciar_bd()
         with ThreadPoolExecutor(max_workers=numero_hilos) as executor:

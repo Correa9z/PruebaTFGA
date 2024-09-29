@@ -11,4 +11,7 @@ class ProyectoControlador:
 
     def buscar_totalidad_proyectos(self,cursor):
         return self.proyecto.buscar_totalidad_proyectos(cursor)
+    
+    def actualizar_proyectos(self,conexion,cursor,nombre_departamento,viejo_nombre,nuevo_nombre):
+        self.proyecto.actualizar_nombre_proyectos(conexion,cursor,nombre_departamento,viejo_nombre,nuevo_nombre)
 
