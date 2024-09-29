@@ -1,44 +1,46 @@
 from infra.conexion_bd import ConexionBd
 from modelos.empleado import Empleado
 import logging
+from threading import Lock
 
 
 class Proyecto:
 
     conexion = ConexionBd()
     
-
     def __init__(self,id,nombre,empleado_id):
         self.id = id
         self.nombre = nombre
         self.empleado_id = empleado_id 
+        self.lock = Lock()
+        Proyecto.iniciar_logs()
     
 
     def crear_proyecto(self,nombre,nombre_empleado):
-        try:
-            Proyecto.iniciar_logs()
-            resultado = Proyecto.buscar_proyecto_nombre(self,nombre)
-            empleado = Empleado("","","","")
-            empleado = empleado.buscar_empleado_nombre(nombre_empleado)
+        with self.lock:
+            try:
+                resultado = Proyecto.buscar_proyecto_nombre(self,nombre)
+                empleado = Empleado("","","","")
+                empleado = empleado.buscar_empleado_nombre(nombre_empleado)
 
-            cursor = self.conexion.conectar_bd()
-            
-            if(resultado == None):
-                if(empleado != None):
-                    query = "INSERT INTO proyectos (nombre,empleado_id) VALUES (%s,%s)"
-                    cursor.execute(query,(nombre,empleado.id,))
-                    self.conexion.conexion.commit()
-                    logging.info(f"{nombre}-{nombre_empleado}: Registro almacenado correctamente")
+                cursor = self.conexion.conectar_bd()
+                
+                if(resultado == None):
+                    if(empleado != None):
+                        query = "INSERT INTO proyectos (nombre,empleado_id) VALUES (%s,%s)"
+                        cursor.execute(query,(nombre,empleado.id,))
+                        self.conexion.conexion.commit()
+                        logging.info(f"{nombre}-{nombre_empleado}: Registro almacenado correctamente")
+                    else:
+                        logging.error(f"{nombre}-{nombre_empleado}: El empleado no existe en la BD")
                 else:
-                    logging.error(f"{nombre}-{nombre_empleado}: El empleado no existe en la BD")
-            else:
-                logging.error(f"{nombre}-{nombre_empleado}: El proyecto ya existe en al BD")
+                    logging.error(f"{nombre}-{nombre_empleado}: El proyecto ya existe en al BD")
 
-        except Exception as e:
-            print(f"Error: {e}")
+            except Exception as e:
+                print(f"Error: {e}")
 
-        finally:
-            self.conexion.cerrar_bd(cursor)
+            finally:
+                self.conexion.cerrar_bd(cursor)
 
     
     def buscar_proyecto_nombre(self,nombre_proyecto):
@@ -69,11 +71,10 @@ class Proyecto:
             query = "SELECT p.id, p.nombre, e.nombre, d.nombre FROM proyectos p INNER JOIN empleados e ON p.empleado_id = e.id INNER JOIN departamentos d ON e.departamento_id = d.id"
             cursor.execute(query,())
             resultado = cursor.fetchall()
-
             if resultado != None:
-                print(resultado)
-            else: 
-                print("None")
+                return resultado
+            else:
+                return None
             
         except Exception as e:
             print(f"Error: {e}")
@@ -81,8 +82,6 @@ class Proyecto:
         finally:
             self.conexion.cerrar_bd(cursor)
 
-    
-    
 
 
     def iniciar_logs():
