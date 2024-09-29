@@ -3,20 +3,18 @@ import mysql.connector
 
 class ConexionBd:
 
-    conexion = ""
-    cursor = ""
 
     def conectar_bd(self):
         try:
-            self.conexion = mysql.connector.connect(host='localhost', port='3306',user='root',password='',database='pruebaT')
+            conexion = mysql.connector.connect(host='localhost', port='3306',user='root',password='',database='pruebaT')
 
-            self.cursor = self.conexion.cursor()
+            cursor = conexion.cursor()
 
-            return self.cursor
+            return conexion, cursor
 
         except Exception as e:
             print("Error: ",e)
     
-    def cerrar_bd(self,cursor):
+    def cerrar_bd(self,conexion,cursor):
         cursor.close()
-        self.conexion.close()
+        conexion.close()

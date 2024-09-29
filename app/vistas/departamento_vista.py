@@ -9,7 +9,6 @@ class VistaDepartamento:
 
     def __init__(self,ruta_sistema):
         self.ruta_input = ruta_sistema / '../inputs/Departamentos.txt'
-        print(self.ruta_input)
         self.controlador = DepartamentoControlador()
 
     def leer_informacion(ruta):
@@ -21,7 +20,9 @@ class VistaDepartamento:
             print(f"Error: {e}")
     
 
-    def carga_departamentos(self, numero_hilos=10):
+    def carga_departamentos(self, numero_hilos=20):
         lista_departamentos = VistaDepartamento.leer_informacion(self.ruta_input)
+        conexion, cursor = self.controlador.iniciar_bd()
         with ThreadPoolExecutor(max_workers=numero_hilos) as executor:
-            executor.map(lambda departamento: self.controlador.crear_departamento(departamento[0]), lista_departamentos)
+            executor.map(lambda departamento: self.controlador.crear_departamento(conexion,cursor,departamento[0]), lista_departamentos)
+        self.controlador.cerrar_bd(conexion,cursor)

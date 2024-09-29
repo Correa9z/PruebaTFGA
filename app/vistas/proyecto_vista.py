@@ -10,6 +10,7 @@ class VistaProyecto:
     ruta_totalidad_proyectos = ""
 
     def __init__(self,ruta_sistema):
+        print("proyecto vista")
         self.ruta_input = ruta_sistema / '../inputs/Proyectos.txt'
         self.ruta_input_actualizacion = ruta_sistema / '../inputs/ProyectosActualizacion.txt'
         self.ruta_totalidad_proyectos = ruta_sistema / '../resultados/ProyectosTotalidad.xlsx'

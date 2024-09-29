@@ -10,6 +10,7 @@ class VistaEmpleado:
     def __init__(self,ruta_sistema):
         self.ruta_input = ruta_sistema / '../inputs/Empleados.txt'
         self.controlador = EmpleadoControlador()
+        
 
     def leer_informacion(ruta):
         try:
