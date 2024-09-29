@@ -1,44 +1,38 @@
-from infra.conexion_bd import ConexionBd
 from threading import Lock
 import logging
+import os
 
 class Departamento:
 
-    conexion = ConexionBd()
-        
+    logger = ""        
 
     def __init__(self,id,nombre):
-        self.lock = Lock()
+        print("Se creo un departamento")
         self.id = id
         self.nombre = nombre 
-        Departamento.iniciar_logs()
+        self.lock = Lock()
     
 
-    def crear_departamento(self,nombre):
+    def crear_departamento(self,conexion,cursor,nombre):
         with self.lock:
             try:
-                resultado = Departamento.buscar_departamento_nombre(self,nombre)
-                cursor = self.conexion.conectar_bd()
-
                 
-                if resultado == None:
+                resultado = Departamento.buscar_departamento_nombre(self,cursor,nombre)
+                
+                if (resultado == None) and (cursor != None):
                     query = "INSERT INTO departamentos (nombre) VALUES (%s)"
                     cursor.execute(query,(nombre,))
-                    self.conexion.conexion.commit()
-                    logging.info(f"{nombre}: Registro almacenado correctamente")
+                    conexion.commit()
+                    self.logger.info(f"{nombre}: Registro almacenado correctamente")
                 else:
-                    logging.error(f"{nombre}: El departamento ya existe en al BD")
+                    self.logger.error(f"{nombre}: El departamento ya existe en al BD")
 
             except Exception as e:
                 print(f"Error: {e}")
 
-            finally:
-                self.conexion.cerrar_bd(cursor)
-
     
-    def buscar_departamento_nombre(self,nombre_departamento):
+    def buscar_departamento_nombre(self,cursor,nombre_departamento):
         try:
-            cursor = self.conexion.conectar_bd()
             query = "SELECT id, nombre FROM departamentos WHERE nombre = %s"
             cursor.execute(query,(nombre_departamento,))
             resultado = cursor.fetchone()
@@ -51,17 +45,17 @@ class Departamento:
         except Exception as e:
             print(f"Error: {e}")
 
-        finally:
-            self.conexion.cerrar_bd(cursor)
 
 
-    def iniciar_logs():
-        logging.basicConfig(
-        filename='app/logs/departamento.log',             # Nombre del archivo de logs
-        level=logging.DEBUG,            # Nivel de registro: DEBUG, INFO, WARNING, ERROR, CRITICAL
-        format='%(asctime)s - %(levelname)s - %(message)s',  # Formato del mensaje
-        datefmt='%Y-%m-%d %H:%M:%S'     # Formato de la fecha
-    )
+    def iniciar_logs(self,):
+        logger = logging.getLogger('departamento')
+        logger.setLevel(logging.DEBUG)
         
-
-
+        if not logger.hasHandlers():
+            file_handler = logging.FileHandler(os.path.join("app/logs/", 'departamento.log'))
+            formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s',datefmt='%Y-%m-%d %H:%M:%S')
+            file_handler.setFormatter(formatter)
+            logger.addHandler(file_handler)
+        
+        self.logger = logger
+        

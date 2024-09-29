@@ -2,11 +2,13 @@ from infra.conexion_bd import ConexionBd
 from modelos.departamento import Departamento
 import logging
 from threading import Lock
+import os
 
 
 class Empleado:
 
     conexion = ConexionBd()
+    logger = ""
     
 
     def __init__(self,id,nombre,identificacion,departamento_id):
@@ -15,7 +17,6 @@ class Empleado:
         self.identificacion = identificacion
         self.departamento_id = departamento_id
         self.lock = Lock() 
-        Empleado.iniciar_logs()
     
 
     def crear_empleado(self,nombre,identificacion,departamento):
@@ -32,17 +33,18 @@ class Empleado:
                         query = "INSERT INTO empleados (nombre,identificacion,departamento_id) VALUES (%s,%s,%s)"
                         cursor.execute(query,(nombre,identificacion,departamento_obj.id,))
                         self.conexion.conexion.commit()
-                        logging.info(f"{nombre}-{identificacion}-{departamento}: Registro almacenado correctamente.")
+                        self.logger.info(f"{nombre}-{identificacion}-{departamento}: Registro almacenado correctamente.")
                     else:
-                        logging.error(f"{nombre}-{identificacion}-{departamento}: El departamento no existe en la BD")
+                        self.logger.error(f"{nombre}-{identificacion}-{departamento}: El departamento no existe en la BD")
                 else:
-                    logging.error(f"{nombre}-{identificacion}-{departamento}: El empleado ya existe en la BD")
+                    self.logger.error(f"{nombre}-{identificacion}-{departamento}: El empleado ya existe en la BD")
 
             except Exception as e:
                 print(f"Error: {e}")
 
             finally:
-                self.conexion.cerrar_bd(cursor)
+                if (cursor != None): 
+                    self.conexion.cerrar_bd(cursor)
 
     
     def buscar_empleado_identificacion(self,identificacion_empleado):
@@ -61,12 +63,12 @@ class Empleado:
             print(f"Error: {e}")
 
         finally:
-            self.conexion.cerrar_bd(cursor)
+            if (cursor != None): 
+                self.conexion.cerrar_bd(cursor)
 
 
     def buscar_empleado_nombre(self,nombre_empleado):
         try:
-            print(nombre_empleado)
             cursor = self.conexion.conectar_bd()
             query = "SELECT id, nombre, identificacion, departamento_id FROM empleados WHERE nombre = %s"
             cursor.execute(query,(nombre_empleado,))
@@ -81,13 +83,18 @@ class Empleado:
             print(f"Error: {e}")
 
         finally:
-            self.conexion.cerrar_bd(cursor)
+            if (cursor != None): 
+                self.conexion.cerrar_bd(cursor)
 
 
-    def iniciar_logs():
-        logging.basicConfig(
-        filename='app/logs/empleado.log',             # Nombre del archivo de logs
-        level=logging.DEBUG,            # Nivel de registro: DEBUG, INFO, WARNING, ERROR, CRITICAL
-        format='%(asctime)s - %(levelname)s - %(message)s',  # Formato del mensaje
-        datefmt='%Y-%m-%d %H:%M:%S'     # Formato de la fecha
-    )
+    def iniciar_logs(self,):
+        logger = logging.getLogger('empleado')
+        logger.setLevel(logging.DEBUG)
+        
+        if not logger.hasHandlers():
+            file_handler = logging.FileHandler(os.path.join("app/logs/", 'empleado.log'))
+            formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s',datefmt='%Y-%m-%d %H:%M:%S')
+            file_handler.setFormatter(formatter)
+            logger.addHandler(file_handler)
+        
+        self.logger = logger

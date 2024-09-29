@@ -2,18 +2,19 @@ from infra.conexion_bd import ConexionBd
 from modelos.empleado import Empleado
 import logging
 from threading import Lock
+import os
 
 
 class Proyecto:
 
     conexion = ConexionBd()
+    logger = ""
     
     def __init__(self,id,nombre,empleado_id):
         self.id = id
         self.nombre = nombre
         self.empleado_id = empleado_id 
         self.lock = Lock()
-        Proyecto.iniciar_logs()
     
 
     def crear_proyecto(self,nombre,nombre_empleado):
@@ -30,17 +31,18 @@ class Proyecto:
                         query = "INSERT INTO proyectos (nombre,empleado_id) VALUES (%s,%s)"
                         cursor.execute(query,(nombre,empleado.id,))
                         self.conexion.conexion.commit()
-                        logging.info(f"{nombre}-{nombre_empleado}: Registro almacenado correctamente")
+                        self.logger.info(f"{nombre}-{nombre_empleado}: Registro almacenado correctamente")
                     else:
-                        logging.error(f"{nombre}-{nombre_empleado}: El empleado no existe en la BD")
+                        self.logger.error(f"{nombre}-{nombre_empleado}: El empleado no existe en la BD")
                 else:
-                    logging.error(f"{nombre}-{nombre_empleado}: El proyecto ya existe en al BD")
+                    self.logger.error(f"{nombre}-{nombre_empleado}: El proyecto ya existe en al BD")
 
             except Exception as e:
                 print(f"Error: {e}")
 
             finally:
-                self.conexion.cerrar_bd(cursor)
+                if (cursor != None): 
+                    self.conexion.cerrar_bd(cursor)
 
     
     def buscar_proyecto_nombre(self,nombre_proyecto):
@@ -60,7 +62,8 @@ class Proyecto:
             print(f"Error: {e}")
 
         finally:
-            self.conexion.cerrar_bd(cursor)
+            if (cursor != None): 
+                self.conexion.cerrar_bd(cursor)
     
 
     def buscar_totalidad_proyectos(self):
@@ -78,13 +81,20 @@ class Proyecto:
             print(f"Error: {e}")
 
         finally:
-            self.conexion.cerrar_bd(cursor)
+            if (cursor != None): 
+                self.conexion.cerrar_bd(cursor)
 
 
-    def iniciar_logs():
-        logging.basicConfig(
-        filename='app/logs/proyecto.log',             # Nombre del archivo de logs
-        level=logging.DEBUG,            # Nivel de registro: DEBUG, INFO, WARNING, ERROR, CRITICAL
-        format='%(asctime)s - %(levelname)s - %(message)s',  # Formato del mensaje
-        datefmt='%Y-%m-%d %H:%M:%S'     # Formato de la fecha
-    )
+
+
+    def iniciar_logs(self,):
+        logger = logging.getLogger('proyecto')
+        logger.setLevel(logging.DEBUG)
+        
+        if not logger.hasHandlers():
+            file_handler = logging.FileHandler(os.path.join("app/logs/", 'proyecto.log'))
+            formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s',datefmt='%Y-%m-%d %H:%M:%S')
+            file_handler.setFormatter(formatter)
+            logger.addHandler(file_handler)
+        
+        self.logger = logger
