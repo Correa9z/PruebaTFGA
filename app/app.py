@@ -6,6 +6,8 @@ from pathlib import Path
 
 ruta_sistema = Path(__file__).parent
 
+print(ruta_sistema)
+
 vista_d = VistaDepartamento(ruta_sistema)
 vista_e = VistaEmpleado(ruta_sistema)
 vista_p = VistaProyecto(ruta_sistema)
@@ -20,9 +22,10 @@ while True:
     opcion = int(input("Seleccione una opción: "))
 
     if opcion == 1:
+        print()
         vista_d.carga_departamentos()
-        vista_e.carga_empleados()
-        vista_p.carga_proyectos()
+        #vista_e.carga_empleados()
+        #vista_p.carga_proyectos()
     elif opcion == 2:
         vista_p.buscar_totalidad_proyectos()
     elif opcion == 3:
