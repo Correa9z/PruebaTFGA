@@ -11,9 +11,6 @@ vista_d = VistaDepartamento(ruta_sistema)
 vista_e = VistaEmpleado(ruta_sistema)
 vista_p = VistaProyecto(ruta_sistema)
 
-import multiprocessing
-print(multiprocessing.cpu_count())
-
 
 while True:
 
@@ -27,7 +24,7 @@ while True:
         print("Prueba")
         inicio = time.time()
         vista_d.carga_departamentos()
-        #vista_e.carga_empleados()
+        vista_e.carga_empleados()
         #vista_p.carga_proyectos()
         final = time.time()
         print(f"Tiempo transcurrido en segundos: {final - inicio}")

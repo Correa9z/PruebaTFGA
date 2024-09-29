@@ -6,10 +6,9 @@ class ProyectoControlador:
         self.proyecto = Proyecto("","","")
         self.proyecto.iniciar_logs()
 
-    def crear_proyecto(self,nombre,nombre_empleado):
-        self.proyecto.crear_proyecto(nombre,nombre_empleado)
+    def crear_proyecto(self,conexion,cursor,nombre,nombre_empleado):
+        self.proyecto.crear_proyecto(conexion,cursor,nombre,nombre_empleado)
 
-    def buscar_totalidad_proyectos(self):
-        return self.proyecto.buscar_totalidad_proyectos()
-
+    def buscar_totalidad_proyectos(self,cursor):
+        return self.proyecto.buscar_totalidad_proyectos(cursor)
 

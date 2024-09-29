@@ -1,6 +1,7 @@
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor
 from controladores.departamento_controlador import DepartamentoControlador
+from controladores.bd_controlador import BdControlador
 
 
 class VistaDepartamento:
@@ -9,7 +10,8 @@ class VistaDepartamento:
 
     def __init__(self,ruta_sistema):
         self.ruta_input = ruta_sistema / '../inputs/Departamentos.txt'
-        self.controlador = DepartamentoControlador()
+        self.departamento_controlador = DepartamentoControlador()
+        self.bd_controlador = BdControlador()  
 
     def leer_informacion(ruta):
         try:
@@ -22,7 +24,7 @@ class VistaDepartamento:
 
     def carga_departamentos(self, numero_hilos=20):
         lista_departamentos = VistaDepartamento.leer_informacion(self.ruta_input)
-        conexion, cursor = self.controlador.iniciar_bd()
+        conexion, cursor = self.bd_controlador.iniciar_bd()
         with ThreadPoolExecutor(max_workers=numero_hilos) as executor:
-            executor.map(lambda departamento: self.controlador.crear_departamento(conexion,cursor,departamento[0]), lista_departamentos)
-        self.controlador.cerrar_bd(conexion,cursor)
+            executor.map(lambda departamento: self.departamento_controlador.crear_departamento(conexion,cursor,departamento[0]), lista_departamentos)
+        self.bd_controlador.cerrar_bd(conexion,cursor)
