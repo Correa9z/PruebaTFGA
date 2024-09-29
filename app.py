@@ -1,11 +1,15 @@
 from vistas.departamento_vista import VistaDepartamento
 from vistas.empleado_vista import VistaEmpleado
 from vistas.proyecto_vista import VistaProyecto
+from pathlib import Path
 
 
-vista_d = VistaDepartamento()
-vista_e = VistaEmpleado()
-vista_p = VistaProyecto()
+ruta_sistema = Path(__file__).parent
+
+vista_d = VistaDepartamento(ruta_sistema)
+vista_e = VistaEmpleado(ruta_sistema)
+vista_p = VistaProyecto(ruta_sistema)
+
 
 while True:
 
@@ -27,5 +31,4 @@ while True:
         break
     else:
         print("Opción no válida.")
-
-
+        break
