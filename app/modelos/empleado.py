@@ -7,8 +7,8 @@ import os
 
 class Empleado:
 
-    conexion = ConexionBd()
     logger = ""
+    departamento = Departamento("","")
     
 
     def __init__(self,id,nombre,identificacion,departamento_id):
@@ -19,20 +19,17 @@ class Empleado:
         self.lock = Lock() 
     
 
-    def crear_empleado(self,nombre,identificacion,departamento):
+    def crear_empleado(self,conexion,cursor,nombre,identificacion,departamento):
         with self.lock:
             try:
-                resultado = Empleado.buscar_empleado_identificacion(self,identificacion)
-                departamento_obj = Departamento("","")
-                departamento_obj = departamento_obj.buscar_departamento_nombre(departamento)
-
-                cursor = self.conexion.conectar_bd()
+                resultado = Empleado.buscar_empleado_identificacion(self,cursor,identificacion)
+                departamento_obj = self.departamento.buscar_departamento_nombre(cursor,departamento)
                 
                 if(resultado == None):
                     if(departamento_obj != None):
                         query = "INSERT INTO empleados (nombre,identificacion,departamento_id) VALUES (%s,%s,%s)"
                         cursor.execute(query,(nombre,identificacion,departamento_obj.id,))
-                        self.conexion.conexion.commit()
+                        conexion.commit()
                         self.logger.info(f"{nombre}-{identificacion}-{departamento}: Registro almacenado correctamente.")
                     else:
                         self.logger.error(f"{nombre}-{identificacion}-{departamento}: El departamento no existe en la BD")
@@ -42,14 +39,9 @@ class Empleado:
             except Exception as e:
                 print(f"Error: {e}")
 
-            finally:
-                if (cursor != None): 
-                    self.conexion.cerrar_bd(cursor)
-
     
-    def buscar_empleado_identificacion(self,identificacion_empleado):
+    def buscar_empleado_identificacion(self,cursor,identificacion_empleado):
         try:
-            cursor = self.conexion.conectar_bd()
             query = "SELECT id, nombre, identificacion, departamento_id FROM empleados WHERE identificacion = %s"
             cursor.execute(query,(identificacion_empleado,))
             resultado = cursor.fetchone()
@@ -62,14 +54,9 @@ class Empleado:
         except Exception as e:
             print(f"Error: {e}")
 
-        finally:
-            if (cursor != None): 
-                self.conexion.cerrar_bd(cursor)
 
-
-    def buscar_empleado_nombre(self,nombre_empleado):
+    def buscar_empleado_nombre(self,cursor,nombre_empleado):
         try:
-            cursor = self.conexion.conectar_bd()
             query = "SELECT id, nombre, identificacion, departamento_id FROM empleados WHERE nombre = %s"
             cursor.execute(query,(nombre_empleado,))
             resultado = cursor.fetchone()
@@ -81,10 +68,6 @@ class Empleado:
             
         except Exception as e:
             print(f"Error: {e}")
-
-        finally:
-            if (cursor != None): 
-                self.conexion.cerrar_bd(cursor)
 
 
     def iniciar_logs(self,):

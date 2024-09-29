@@ -11,9 +11,6 @@ vista_d = VistaDepartamento(ruta_sistema)
 vista_e = VistaEmpleado(ruta_sistema)
 vista_p = VistaProyecto(ruta_sistema)
 
-import multiprocessing
-print(multiprocessing.cpu_count())
-
 
 while True:
 
@@ -26,15 +23,15 @@ while True:
     if opcion == 1:
         print("Prueba")
         inicio = time.time()
-        vista_d.carga_departamentos()
-        #vista_e.carga_empleados()
+        #vista_d.carga_departamentos()
+        vista_e.carga_empleados()
         #vista_p.carga_proyectos()
         final = time.time()
         print(f"Tiempo transcurrido en segundos: {final - inicio}")
     elif opcion == 2:
         vista_p.buscar_totalidad_proyectos()
     elif opcion == 3:
-        print("Caso todavia no usable")
+        vista_p.carga_actualizacion_proyectos()
     elif opcion == 4:
         break
     else:

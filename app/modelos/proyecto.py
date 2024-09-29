@@ -1,5 +1,6 @@
 from infra.conexion_bd import ConexionBd
 from modelos.empleado import Empleado
+from modelos.departamento import Departamento
 import logging
 from threading import Lock
 import os
@@ -7,8 +8,9 @@ import os
 
 class Proyecto:
 
-    conexion = ConexionBd()
     logger = ""
+    empleado = Empleado("","","","")
+    departamento = Departamento("","")
     
     def __init__(self,id,nombre,empleado_id):
         self.id = id
@@ -17,20 +19,17 @@ class Proyecto:
         self.lock = Lock()
     
 
-    def crear_proyecto(self,nombre,nombre_empleado):
+    def crear_proyecto(self,conexion,cursor,nombre,nombre_empleado):
         with self.lock:
             try:
-                resultado = Proyecto.buscar_proyecto_nombre(self,nombre)
-                empleado = Empleado("","","","")
-                empleado = empleado.buscar_empleado_nombre(nombre_empleado)
-
-                cursor = self.conexion.conectar_bd()
+                resultado = Proyecto.buscar_proyecto_nombre(self,cursor,nombre)
+                empleado = self.empleado.buscar_empleado_nombre(cursor,nombre_empleado)
                 
                 if(resultado == None):
                     if(empleado != None):
                         query = "INSERT INTO proyectos (nombre,empleado_id) VALUES (%s,%s)"
                         cursor.execute(query,(nombre,empleado.id,))
-                        self.conexion.conexion.commit()
+                        conexion.commit()
                         self.logger.info(f"{nombre}-{nombre_empleado}: Registro almacenado correctamente")
                     else:
                         self.logger.error(f"{nombre}-{nombre_empleado}: El empleado no existe en la BD")
@@ -40,14 +39,9 @@ class Proyecto:
             except Exception as e:
                 print(f"Error: {e}")
 
-            finally:
-                if (cursor != None): 
-                    self.conexion.cerrar_bd(cursor)
-
     
-    def buscar_proyecto_nombre(self,nombre_proyecto):
+    def buscar_proyecto_nombre(self,cursor,nombre_proyecto):
         try:
-            cursor = self.conexion.conectar_bd()
             query = "SELECT id, nombre, empleado_id FROM proyectos WHERE nombre = %s"
             cursor.execute(query,(nombre_proyecto,))
             resultado = cursor.fetchone()
@@ -61,14 +55,10 @@ class Proyecto:
         except Exception as e:
             print(f"Error: {e}")
 
-        finally:
-            if (cursor != None): 
-                self.conexion.cerrar_bd(cursor)
     
 
-    def buscar_totalidad_proyectos(self):
+    def buscar_totalidad_proyectos(self,cursor):
         try:
-            cursor = self.conexion.conectar_bd()
             query = "SELECT p.id, p.nombre, e.nombre, d.nombre FROM proyectos p INNER JOIN empleados e ON p.empleado_id = e.id INNER JOIN departamentos d ON e.departamento_id = d.id"
             cursor.execute(query,())
             resultado = cursor.fetchall()
@@ -80,11 +70,16 @@ class Proyecto:
         except Exception as e:
             print(f"Error: {e}")
 
-        finally:
-            if (cursor != None): 
-                self.conexion.cerrar_bd(cursor)
 
+    def actualizar_nombre_proyectos(self,conexion,cursor,nombre_departamento,viejo_nombre,nuevo_nombre):
+        with self.lock:
+            try:
+                query = "UPDATE proyectos SET nombre = %s WHERE nombre = %s AND empleado_id IN ( SELECT e.id FROM empleados e INNER JOIN departamentos d ON e.departamento_id = d.id WHERE d.nombre = %s)"
+                cursor.execute(query,(nuevo_nombre,viejo_nombre,nombre_departamento,))
+                conexion.commit()
 
+            except Exception as e:
+                print(f"Error: {e}")
 
 
     def iniciar_logs(self,):

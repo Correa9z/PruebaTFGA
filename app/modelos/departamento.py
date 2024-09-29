@@ -7,7 +7,6 @@ class Departamento:
     logger = ""        
 
     def __init__(self,id,nombre):
-        print("Se creo un departamento")
         self.id = id
         self.nombre = nombre 
         self.lock = Lock()
