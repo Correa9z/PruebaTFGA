@@ -24,6 +24,7 @@ class VistaProyecto:
         except Exception as e:
             print(f"Error: {e}")
 
+
     def carga_proyectos(self, numero_hilos = 20):
         lista_proyectos = VistaProyecto.leer_informacion(self.ruta_input)
         conexion, cursor = self.bd_controlador.iniciar_bd()
@@ -38,9 +39,18 @@ class VistaProyecto:
         dataframe.to_excel(self.ruta_totalidad_proyectos,index=False)
         self.bd_controlador.cerrar_bd(conexion,cursor)
 
-    def carga_actualizacion_proyectos(self, numero_hilos = 20):
+
+    def dividir_en_lotes(data, tamano_lote):
+        for i in range(0, len(data), tamano_lote):
+            yield data[i:i + tamano_lote]
+    
+
+    def carga_actualizacion_proyectos(self, numero_hilos = 12, tamaño_lotes = 6000):
         lista_proyectos = VistaProyecto.leer_informacion(self.ruta_input_actualizacion)
         conexion, cursor = self.bd_controlador.iniciar_bd()
+
+        lotes = list(VistaProyecto.dividir_en_lotes(lista_proyectos,tamaño_lotes))
+
         with ThreadPoolExecutor(max_workers=numero_hilos) as executor:
-            executor.map(lambda proyecto: self.proyecto_controlador.actualizar_proyectos(conexion,cursor,proyecto[0],proyecto[1],proyecto[2]), lista_proyectos)
+            executor.map(lambda lote: self.proyecto_controlador.actualizar_proyectos(conexion,cursor,lote), lotes)
         self.bd_controlador.cerrar_bd(conexion,cursor)
